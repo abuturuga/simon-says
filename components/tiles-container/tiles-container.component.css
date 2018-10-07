@@ -1,0 +1,25 @@
+.row {
+  display: flex;
+}
+
+.tile {
+  width: 100px;
+  height: 100px;
+  background: #e67e22;
+  margin: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  font-size: 24px;
+}
+
+.tile.pattern {
+  background:#e74c3c;
+}
+
+.tiles-container.is-selectable .tile:hover,
+.tiles-container.is-selectable .tile.selected {
+  background: #d35400;
+  cursor: pointer;
+}
