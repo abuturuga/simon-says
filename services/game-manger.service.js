@@ -4,6 +4,7 @@
   const DIFFICULTY_LEVELS = {
     EASY: 'easy',
     NORMAL: 'normal',
+    HARD: 'hard'
   };
 
   const LOGIC_EVENTS = {
@@ -76,6 +77,15 @@
         
         case DIFFICULTY_LEVELS.NORMAL:
           this.patternLength = 4;
+          break;
+        
+        case DIFFICULTY_LEVELS.HARD:
+          this.patternLength = 5;
+          this.guessTime = 5000;
+          this.nextRoundTime = 1000;
+          this.patternTime = 2500;
+          this.tilesConfig = { rows: 4, cols: 4 };
+          this.setState(STATE.INIT);
           break;
       }
 
