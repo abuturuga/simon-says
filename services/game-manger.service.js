@@ -37,15 +37,16 @@
         cols: 3
       };
 
-      this.levels = ['']
-
       this.state = null;
-  
+      this.setLevel(DIFFICULTY_LEVELS.EASY);
+
       this.round = 0;
       this.tiles = [];
       this.pattern = [];
       this.guess = [];
-  
+      
+      this.patternLength = 2;
+
       this.timeManager = timeManager;
     }
     
@@ -65,6 +66,22 @@
       this.onTimeCallback = callback;
     }
 
+    setLevel(level) {
+      switch (level) {
+        case DIFFICULTY_LEVELS.EASY:
+          this.patternLength = 3;
+          this.guessTime = 5000;
+          this.nextRoundTime = 2000;
+          this.patternTime = 2000;
+        
+        case DIFFICULTY_LEVELS.NORMAL:
+          this.patternLength = 4;
+          break;
+      }
+
+      this.level = level;
+    }
+
     setState(state) {
       this.state = state;
 
@@ -74,23 +91,40 @@
           this.emit(LOGIC_EVENTS.INIT, this.tiles);
           this.setState(STATE.HALT);
           break;
+
         case STATE.DRAW_ROUND:
           this.generateRound();
-          this.startTimer(2000, 'pattern', () => this.setState(STATE.START_ROUND));
+          this.startTimer(
+            this.patternTime,
+            'pattern',
+            () => this.setState(STATE.START_ROUND)
+          );
           this.emit(LOGIC_EVENTS.SHOW_PATTERN, this.pattern);
           break;
+
         case STATE.START_ROUND:
           this.setState(STATE.IN_PROGESS);
           this.emit(LOGIC_EVENTS.START_ROUND);
           break;
+
         case STATE.IN_PROGESS:
-          this.startTimer(5000, 'time left', () => this.setState(STATE.LOSE));
+          this.startTimer(
+            this.guessTime,
+            'time left',
+            () => this.setState(STATE.LOSE)
+          );
           break;
+
         case STATE.WIN:
           this.timeManager.stop();
-          this.startTimer(2000, 'next round', () => this.setState(STATE.DRAW_ROUND));
+          this.startTimer(
+            this.nextRoundTime,
+            'next round',
+            () => this.setState(STATE.DRAW_ROUND)
+          );
           this.setState(STATE.HALT);
           break;
+
         case STATE.LOSE:
           this.timeManager.stop();
           this.setState(STATE.HALT);
@@ -126,27 +160,24 @@
       this.guess = [];
       this.seedPattern();
     }
-  
-    onRoundSolved() {
-      this.state = STATE.HALT;
-      this.onEventCallback(LOGIC_EVENTS.HALT);
 
-    }
-  
     seedPattern() {
       let done = false;
       this.pattern = [];
+      const { rows, cols } = this.tilesConfig;
 
       while (!done) {
-        const tile = rand(9) + 1;
+        const tile = rand(rows * cols) + 1;
         if (this.pattern.indexOf(tile) === -1) {
           this.pattern.push(tile);
         }
   
-        if (this.pattern.length > 2) {
+        if (this.pattern.length === this.patternLength) {
           done = true;
         }
       }
+
+      console.log(this.pattern);
     }
   
     getTiles() {

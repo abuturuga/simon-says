@@ -1,5 +1,7 @@
 ((app) => {
 
+  const DIFFICULTY_SELECTOR_CLASS = 'difficulty-selector';
+
   class AppComponent {
 
     constructor() {
@@ -16,6 +18,7 @@
       this.$startBtn = document.querySelector('#start-btn');
       this.$timerBar = document.querySelector('#timer-bar');
       this.$gameCanvas = document.querySelector('#game-canvas');
+      this.$difficultySelector = document.querySelector(`.${DIFFICULTY_SELECTOR_CLASS}`);
     }
 
     handleTimeChange(label, percent) {
@@ -53,6 +56,9 @@
       this.gameManager.onTime(this.handleTimeChange.bind(this));
       this.gameManager.on(this.handleManagerEvents.bind(this));
       this.$startBtn.addEventListener('click', () => this.gameManager.start());
+      this.$difficultySelector.addEventListener('change', 
+        (event) => this.gameManager.setLevel(event.target.value)
+      );
     }
 
     renderComponents() {
@@ -70,7 +76,7 @@
       );
 
       return `
-        <select class="difficulty-selector">
+        <select class="${DIFFICULTY_SELECTOR_CLASS}">
           ${options}
         </select>
       `;
