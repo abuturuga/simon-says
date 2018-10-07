@@ -64,6 +64,18 @@
       this.timerBar.render('#timer-bar');
     }
 
+    renderDifficultySelector(levels) {
+      const options = levels.map(level =>
+        `<option value="${level}">${level}</option>`
+      );
+
+      return `
+        <select class="difficulty-selector">
+          ${options}
+        </select>
+      `;
+    }
+
     render(rootSelector) {
       const template = `
         <div class="app-container">
@@ -73,6 +85,7 @@
 
           <div class="player-control-bar">
             <button id="start-btn">Start</button>
+            ${this.renderDifficultySelector(this.gameManager.getDifficultyLevels())}
             <div id="timer-bar"></div>
           </div>
           <div id="game-canvas"></div>

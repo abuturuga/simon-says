@@ -1,6 +1,11 @@
 ((app) => {
   const rand = limit => Math.floor(Math.random() * limit);
   
+  const DIFFICULTY_LEVELS = {
+    EASY: 'easy',
+    NORMAL: 'normal',
+  };
+
   const LOGIC_EVENTS = {
     INIT: 'INIT',
     SHOW_PATTERN: 'SHOW_PATTERN',
@@ -31,7 +36,9 @@
         rows: 3,
         cols: 3
       };
-  
+
+      this.levels = ['']
+
       this.state = null;
   
       this.round = 0;
@@ -146,6 +153,11 @@
       return this.tiles;
     }
 
+    getDifficultyLevels() {
+      return Object.keys(DIFFICULTY_LEVELS)
+        .map(key => DIFFICULTY_LEVELS[key]);
+    }
+
     setTile(value) {
       if (this.state !== STATE.IN_PROGESS) return;
 
@@ -158,7 +170,7 @@
         if (percent === null) {
           actionCallback();
         }
-        console.log('here');
+
         this.onTimeCallback(label, percent);
       }, duration)
     }

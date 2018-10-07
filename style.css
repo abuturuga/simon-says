@@ -4,10 +4,29 @@ body {
   padding: 0;
   background: #ecf0f1;
   font-family: 'Roboto', sans-serif;
+  color: rgba(0, 0, 0, 0.84);
+}
+
+.app-container {
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 #game-canvas {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+#start-btn {
+  outline: none;
+  cursor: pointer;
+  border: none;
+  width: 100px;
+  height: 30px;
+  color: white;
+  background: #27ae60;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: 500;
 }
