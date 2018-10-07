@@ -82,6 +82,7 @@
           break;
         case LOGIC_EVENTS.LOSE:
           alert('you lose');
+          tilesComponent.toggleSelectableTiles(false);
           break;
       }
     }

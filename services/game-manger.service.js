@@ -72,23 +72,51 @@
 
       this._initLevelConfig();
     }
-    
+
+    /**
+     * Seed the tiles for the first time.
+     * 
+     * @public
+     */
     init() {
       this.setState(STATE.INIT);
     }
 
+    /**
+     * Emit a new game event for the external components.
+     * 
+     * @private
+     * @param {string} event Game event
+     * @param {any} payload Event payload
+     */
     _emit(event, payload) {
       this.onEventCallback(event, payload);
     }
     
+    /**
+     * Register the event listener for the game events.
+     * 
+     * @public
+     * @param {Function} callback 
+     */
     on(callback) {
       this.onEventCallback = callback;
     }
 
+    /**
+     * Register a callback for the timers events.
+     * 
+     * @public
+     * @param {Function} callback 
+     */
     onTime(callback) {
       this.onTimeCallback = callback;
     }
 
+    /**
+     * Initialize the configuration for the easy level.
+     * It's also used to reset the level configuration.
+     */
     _initLevelConfig() {
       this.level = DIFFICULTY_LEVELS.EASY;
       this.setLevelConfig({
@@ -101,10 +129,23 @@
       });
     }
 
+    /**
+     * Set the level configuration along with the default properties.
+     * 
+     * @private
+     * @param {Object} config Level configuration
+     */
     setLevelConfig(config) {
       this.levelConfig = Object.assign({}, this.levelConfig, config);
     }
 
+    /**
+     * Set the current difficulty level and reload the game
+     * accordingly with that level.
+     * 
+     * @public
+     * @param {string} level Game level
+     */
     setLevel(level) {
       switch (level) {
         case DIFFICULTY_LEVELS.EASY:
@@ -133,6 +174,14 @@
       this.setState(STATE.INIT);
     }
 
+    /**
+     * Set the state of the application, handle the actions related
+     * to that state.
+     * This is the only place that will update the application state: tiles etc.
+     * 
+     * @public
+     * @param {string} state Application state.
+     */
     setState(state) {
       this.state = state;
 
@@ -144,7 +193,7 @@
           break;
 
         case STATE.DRAW_ROUND:
-          this.generateRound();
+          this._generateRound();
           this._startTimer(
             this.levelConfig.patternTime,
             'pattern',
@@ -184,6 +233,11 @@
       }
     }
 
+    /**
+     * Generate a new set of tiles.
+     * 
+     * @private
+     */
     _seedTiles() {
       const { rows, cols } = this.levelConfig;
       let incrementor = 1;
@@ -192,7 +246,12 @@
         _ => Array(cols).fill(0).map(_ => incrementor++)
       );
     }
-  
+    
+    /**
+     * Check the current status of the game if the user win or lose.
+     * 
+     * @private
+     */
     _checkStatus() {
       const { guess, pattern } = this.boardState;
       if (guess.length !== pattern.length) return;
@@ -207,29 +266,64 @@
       this.setState(state);
     }
 
-    generateRound() {
+    /**
+     * Generate a new round.
+     * 
+     * @private
+     */
+    _generateRound() {
       const { rows, cols, patternLength } = this.levelConfig;
 
       this.boardState.guess = [];
       this.boardState.pattern = generatePattern(rows, cols, patternLength);
     }
-  
+    
+    /**
+     * Return the curent state of the tiles.
+     * 
+     * @public
+     * @returns {Array}
+     */
     getTiles() {
       return this.boardState.tiles;
     }
 
+    /**
+     * Return all the available difficultie levels.
+     * 
+     * @public
+     * @returns {Array}
+     */
     getDifficultyLevels() {
       return Object.keys(DIFFICULTY_LEVELS)
-        .map(key => DIFFICULTY_LEVELS[key]);
+        .map(key => DIFFICULTY_LEVELS[key].toLowerCase());
     }
 
+    /**
+     * Sets the guess tile form the user only once.
+     * 
+     * @public
+     * @param {number} value Tile value
+     */
     setTile(value) {
-      if (this.state !== STATE.IN_PROGESS) return;
+      if (
+        this.state !== STATE.IN_PROGESS ||
+        this.boardState.guess.indexOf(value) !== -1
+      ) return;
 
       this.boardState.guess.push(value);
       this._checkStatus();
     }
-
+    
+    /**
+     * Sets a `deadline` for the user or for an action.
+     * Also emits this value along with the reason for the deadline.
+     * 
+     * @private
+     * @param {number} duration Timer duration until finish
+     * @param {string} label Emit this label to external components
+     * @param {Function} actionCallback Called after the timer will finish
+     */
     _startTimer(duration, label, actionCallback) {
       this.timeManager.start((percent) => {
         if (percent === null) {
@@ -240,6 +334,11 @@
       }, duration)
     }
 
+    /**
+     * Start the rounds based on the current difficulty level.
+     * 
+     * @public
+     */
     start() {
       this.setState(STATE.INIT);
       this.setState(STATE.DRAW_ROUND);
