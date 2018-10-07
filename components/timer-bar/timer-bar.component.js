@@ -47,6 +47,7 @@
      * Builds the template for the loader component.
      * 
      * @private
+     * @returns {string}
      */
     _renderLoadBar() {
       return `

@@ -86,6 +86,12 @@
       }
     }
 
+    /**
+     * Binds component, childs and services events.
+     * This is the only place where events are binded into the component.
+     * 
+     * @private
+     */
     _bindEvents() {
       this.gameManager.onTime(this._handleTimeChange.bind(this));
       this.gameManager.on(this._handleManagerEvents.bind(this));
@@ -95,6 +101,11 @@
       );
     }
 
+    /**
+     * Render and init the child components.
+     * 
+     * @private
+     */
     _renderComponents() {
       const { TilesContainerComponent, TimerBar } = app;
 
@@ -104,6 +115,13 @@
       this.timerBar.render(`.${TIME_BAR_CLASS}`);
     }
 
+    /**
+     * Render the difficulti level selector.
+     *
+     * @private
+     * @param {array} levels Array with all the difficulties levels
+     * @returns {string}
+     */
     _renderDifficultySelector(levels) {
       const options = levels.map(level =>
         `<option value="${level}">${level}</option>`
@@ -116,6 +134,12 @@
       `;
     }
 
+    /**
+     * Render the control bar component
+     * 
+     * @private
+     * @returns {string}
+     */
     _renderControlBar() {
       return `
         <div class="${CONTROL_BAR_CLASS}">
@@ -126,6 +150,12 @@
       `;
     }
 
+    /**
+     * Render the component into the root element.
+     * 
+     * @public
+     * @param {string} rootSelector CSS selector of the root element
+     */
     render(rootSelector) {
       const template = `
         <div class="${COMPONENT_CLASS}">

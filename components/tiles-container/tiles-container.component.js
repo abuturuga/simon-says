@@ -70,6 +70,8 @@
       isSelectable
         ? this.$tilesContainer.classList.add(COMPONENT_SELECTABLE_CLASS)
         : this.$tilesContainer.classList.remove(COMPONENT_SELECTABLE_CLASS);
+
+      this.isSelectable = isSelectable;
     }
 
     /**
@@ -83,8 +85,7 @@
   
       this.$tilesContainer.addEventListener('click', event => {
         const { target } = event;
-  
-        if (target.classList.contains(TILE_CLASS)) {
+        if (target.classList.contains(TILE_CLASS) && this.isSelectable) {
           const value = target.getAttribute('value');
           target.classList.add(TILE_SELECTED_CLASS);
           callback(parseInt(value));
@@ -117,6 +118,21 @@
         const $tile = document.querySelector(`.${key}`);
 
         $tile.classList.add(TILE_PATTERN_CLASS);
+      });
+    }
+
+    /**
+     * Display the selected tiles.
+     *
+     * @public
+     * @param {Array} tiles Array with the pattern
+     */
+    showSelected(tiles) {
+      tiles.forEach(value => {
+        const key = this._getTileKey(value);
+        const $tile = document.querySelector(`.${key}`);
+
+        $tile.classList.add(TILE_SELECTED_CLASS);
       });
     }
 
