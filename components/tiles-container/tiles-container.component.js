@@ -39,6 +39,7 @@
     /**
      * Appends multiple childs elements into a container element.
      *
+     * @private
      * @param {HTMLElement} $container
      * @param {HTMLElement} $elements
      */
@@ -50,6 +51,7 @@
      * Build a special CSS className in order to select a tile
      * by the number which it holds.
      *
+     * @private
      * @param    {number}  value  Number from the grid
      * @returns  {string}         CSS class name
      */
@@ -61,6 +63,7 @@
      * Toggle a class on the container in order to indicate to user
      * that it can select the tiles with an hover effect.
      *
+     * @public
      * @param   {boolean} isSelectable Flag used to toggle CSS class
      */
     toggleSelectableTiles(isSelectable) {
@@ -69,6 +72,12 @@
         : this.$tilesContainer.classList.remove(COMPONENT_SELECTABLE_CLASS);
     }
 
+    /**
+     * Invoke the callback function only when a tile is selected.
+     *
+     * @public
+     * @param {Function} callback Handle tile selection
+     */
     onTileClick(callback) {
       if (!this.$tilesContainer) return;
   
@@ -83,12 +92,23 @@
       });
     }
     
+    /**
+     * Remove any style on the tiles that indicates an user action.
+     * 
+     * @public
+     */
     clearTilesState() {
       this.$tiles.forEach($tile =>
         $tile.classList.remove(TILE_SELECTED_CLASS, TILE_PATTERN_CLASS)
       );
     }
 
+    /**
+     * Display the pattern on the component.
+     *
+     * @public
+     * @param {Array} tiles Array with the pattern
+     */
     showPattern(tiles) {
       this.clearTilesState();
 
@@ -100,6 +120,13 @@
       });
     }
 
+    /**
+     * Render a tile based on a number value.
+     *
+     * @private
+     * @param {number} value Tile number
+     * @returns {HTMLElement}
+     */
     _renderTile(value) {
       const element = $(TILE_CLASS);
       element.innerHTML = value;
@@ -108,6 +135,13 @@
       return element;
     }
     
+    /**
+     * Render an entire row of tiles.
+     *
+     * @private
+     * @param {Array} row Tiles row
+     * @returns {HTMLElement}
+     */
     _renderRow(row) {
       const $tiles = row.map(tile => this._renderTile(tile));
       this.$tiles = [...this.$tiles, ...$tiles];
@@ -117,6 +151,13 @@
       return $row;
     }
 
+    /**
+     * Map the tiles array into the corresponding html elements.
+     * 
+     * @private
+     * @param {Array} tiles 2 diminesional array with tiles
+     * @returns {HTMLElement}
+     */
     _renderTiles(tiles) {
       this.$tiles = [];
 
@@ -127,6 +168,12 @@
       return $container;
     }
 
+    /**
+     * Render the component into the provided root element.
+     * 
+     * @public
+     * @param {Array} tiles 2 dimensional array with tiles
+     */
     render(tiles) {
       this.$tilesContainer = this._renderTiles(tiles);
   

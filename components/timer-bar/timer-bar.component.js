@@ -20,7 +20,8 @@
 
     /**
      * Sets the the component props.
-     *
+     * 
+     * @public
      * @param {string} label State label
      * @param {number} percent Remaining time in percentage
      */
@@ -34,6 +35,8 @@
     /**
      * Cache the required HTMLElements in order to update them
      * when new props are provided.
+     * 
+     * @private
      */
     _extractElements() {
       this.$status = this.$root.querySelector(`.${STATUS_CLASS}`);
@@ -42,6 +45,8 @@
 
     /**
      * Builds the template for the loader component.
+     * 
+     * @private
      */
     _renderLoadBar() {
       return `
@@ -54,6 +59,7 @@
     /**
      * Render the component into the page.
      *
+     * @public
      * @param {string} rootSelector HTMLElement to attach the componnet
      */
     render(rootSelector) {

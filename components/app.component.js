@@ -8,6 +8,12 @@
         DIFFICULTY_SELECTOR_CLASS = `${CONTROL_BAR_CLASS}--difficulty-selector`,
         TIME_BAR_CLASS = `${CONTROL_BAR_CLASS}--time-bar`;
 
+  /**
+   * Aplication root component.
+   * Render and bind the rest of the components.
+   *
+   * @class
+   */
   class AppComponent {
 
     constructor() {
@@ -20,6 +26,12 @@
       this.gameManager = new GameManager(new TimeManager());
     }
 
+    /**
+     * Cache the required HTMLElements in order to update them
+     * when new events are triggered.
+     * 
+     * @private
+     */
     _extractElements() {
       this.$startBtn = document.querySelector(`.${START_BTN_CLASS}`);
       this.$timerBar = document.querySelector(`.${TIME_BAR_CLASS}`);
@@ -27,10 +39,26 @@
       this.$difficultySelector = document.querySelector(`.${DIFFICULTY_SELECTOR_CLASS}`);
     }
 
+    /**
+     * Handle the time limits of the game by updating the
+     * time bar component.
+     *
+     * @private
+     * @param {string} label State label
+     * @param {number} percent Remaining time in percentage
+     */
     _handleTimeChange(label, percent) {
       this.timerBar.setProps(label, percent);
     }
 
+    /**
+     * Handle the events from the Game Manager and reflect
+     * the updated into the tiles container component.
+     * 
+     * @private
+     * @param {string} event Game Manager event
+     * @param {any} payload Event payload
+     */
     _handleManagerEvents(event, payload) {
       const { LOGIC_EVENTS } = app;
       const { tilesComponent, gameManager } = this;

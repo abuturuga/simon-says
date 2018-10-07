@@ -23,7 +23,7 @@
         done = true;
       }
     }
-    console.log(rows, cols, patternLength);
+
     return pattern;
   }
 
