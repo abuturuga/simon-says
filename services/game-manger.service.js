@@ -28,9 +28,9 @@
   }
 
   const DIFFICULTY_LEVELS = {
-    EASY: 'easy',
-    NORMAL: 'normal',
-    HARD: 'hard'
+    EASY: 'EASY',
+    NORMAL: 'NORMAL',
+    HARD: 'HARD'
   };
 
   const LOGIC_EVENTS = {
@@ -42,13 +42,13 @@
   };
 
   const STATE = {
-    INIT: 'init',
-    DRAW_ROUND: 'draw-round',
-    START_ROUND: 'start-round',
-    IN_PROGESS: 'inprogress',
-    HALT: 'halt',
-    WIN: 'win',
-    LOSE: 'lose',
+    INIT: 'INIT',
+    DRAW_ROUND: 'DRAW_ROUND',
+    START_ROUND: 'START_ROUND',
+    IN_PROGESS: 'IN_PROGESS',
+    HALT: 'HALT',
+    WIN: 'WIN',
+    LOSE: 'LOSE',
   };
 
   /**
@@ -68,11 +68,9 @@
       };
 
       this.state = null;
-
       this.timeManager = timeManager;
 
       this._initLevelConfig();
-      this.setLevel(DIFFICULTY_LEVELS.EASY);
     }
     
     init() {
@@ -92,6 +90,7 @@
     }
 
     _initLevelConfig() {
+      this.level = DIFFICULTY_LEVELS.EASY;
       this.setLevelConfig({
         rows: 3,
         cols: 3,
@@ -127,11 +126,11 @@
             rows: 4,
             cols: 4
           });
-          this.setState(STATE.INIT);
           break;
       }
 
       this.level = level;
+      this.setState(STATE.INIT);
     }
 
     setState(state) {
@@ -242,8 +241,7 @@
     }
 
     start() {
-      if (this.state !== STATE.HALT) return;
-
+      this.setState(STATE.INIT);
       this.setState(STATE.DRAW_ROUND);
     }
   }
