@@ -1,6 +1,32 @@
 ((app) => {
   const rand = limit => Math.floor(Math.random() * limit);
   
+  /**
+   * Generates a new pattern.
+   * 
+   * @param {number} rows Rows limit
+   * @param {number} cols Cols limit
+   * @param {number} patternLength The lenght of the patter
+   * @returns {Array}
+   */
+  function generatePattern(rows, cols, patternLength) {
+    let done = false;
+    const pattern = [];
+
+    while (!done) {
+      const tileIndex = rand(rows * cols) + 1;
+      if (pattern.indexOf(tileIndex) === -1) {
+        pattern.push(tileIndex);
+      }
+
+      if (pattern.length === patternLength) {
+        done = true;
+      }
+    }
+    console.log(rows, cols, patternLength);
+    return pattern;
+  }
+
   const DIFFICULTY_LEVELS = {
     EASY: 'easy',
     NORMAL: 'normal',
@@ -33,22 +59,20 @@
   class GameManager {
 
     constructor(timeManager) {
-      this.tilesConfig = {
-        rows: 3,
-        cols: 3
+      this.levelConfig = {};
+
+      this.boardState = {
+        tiles: [],
+        pattern: [],
+        guess: []
       };
 
       this.state = null;
-      this.setLevel(DIFFICULTY_LEVELS.EASY);
-
-      this.round = 0;
-      this.tiles = [];
-      this.pattern = [];
-      this.guess = [];
-      
-      this.patternLength = 2;
 
       this.timeManager = timeManager;
+
+      this.initLevelConfig();
+      this.setLevel(DIFFICULTY_LEVELS.EASY);
     }
     
     init() {
@@ -67,24 +91,42 @@
       this.onTimeCallback = callback;
     }
 
+    initLevelConfig() {
+      this.setLevelConfig({
+        rows: 3,
+        cols: 3,
+        patternLength: 3,
+        guessTime: 5000,
+        patternTime: 2000,
+        nextRoundTime: 2000
+      });
+    }
+
+    setLevelConfig(config) {
+      this.levelConfig = Object.assign({}, this.levelConfig, config);
+    }
+
     setLevel(level) {
       switch (level) {
         case DIFFICULTY_LEVELS.EASY:
-          this.patternLength = 3;
-          this.guessTime = 5000;
-          this.nextRoundTime = 2000;
-          this.patternTime = 2000;
-        
+          this.initLevelConfig();
+          break;
+
         case DIFFICULTY_LEVELS.NORMAL:
-          this.patternLength = 4;
+          this.initLevelConfig();
+          this.setLevelConfig({patternLength: 4});
           break;
         
         case DIFFICULTY_LEVELS.HARD:
-          this.patternLength = 5;
-          this.guessTime = 5000;
-          this.nextRoundTime = 1000;
-          this.patternTime = 2500;
-          this.tilesConfig = { rows: 4, cols: 4 };
+          this.initLevelConfig();
+          this.setLevelConfig({
+            patternLength: 5,
+            guessTime: 5000,
+            nextRoundTime: 1000,
+            patternTime: 2500,
+            rows: 4,
+            cols: 4
+          });
           this.setState(STATE.INIT);
           break;
       }
@@ -98,18 +140,18 @@
       switch(state) {
         case STATE.INIT:
           this.seedTiles();
-          this.emit(LOGIC_EVENTS.INIT, this.tiles);
+          this.emit(LOGIC_EVENTS.INIT, this.boardState.tiles);
           this.setState(STATE.HALT);
           break;
 
         case STATE.DRAW_ROUND:
           this.generateRound();
           this.startTimer(
-            this.patternTime,
+            this.levelConfig.patternTime,
             'pattern',
             () => this.setState(STATE.START_ROUND)
           );
-          this.emit(LOGIC_EVENTS.SHOW_PATTERN, this.pattern);
+          this.emit(LOGIC_EVENTS.SHOW_PATTERN, this.boardState.pattern);
           break;
 
         case STATE.START_ROUND:
@@ -119,7 +161,7 @@
 
         case STATE.IN_PROGESS:
           this.startTimer(
-            this.guessTime,
+            this.levelConfig.guessTime,
             'time left',
             () => this.setState(STATE.LOSE)
           );
@@ -128,7 +170,7 @@
         case STATE.WIN:
           this.timeManager.stop();
           this.startTimer(
-            this.nextRoundTime,
+            this.levelConfig.nextRoundTime,
             'next round',
             () => this.setState(STATE.DRAW_ROUND)
           );
@@ -144,16 +186,16 @@
     }
 
     seedTiles() {
-      const { rows, cols } = this.tilesConfig;
+      const { rows, cols } = this.levelConfig;
       let incrementor = 1;
   
-      this.tiles = Array(rows).fill(0).map(
+      this.boardState.tiles = Array(rows).fill(0).map(
         _ => Array(cols).fill(0).map(_ => incrementor++)
       );
     }
   
     checkStatus() {
-      const { guess, pattern } = this;
+      const { guess, pattern } = this.boardState;
       if (guess.length !== pattern.length) return;
       
       const sum = (acumulator, element) => acumulator + element;
@@ -167,31 +209,14 @@
     }
 
     generateRound() {
-      this.guess = [];
-      this.seedPattern();
-    }
+      const { rows, cols, patternLength } = this.levelConfig;
 
-    seedPattern() {
-      let done = false;
-      this.pattern = [];
-      const { rows, cols } = this.tilesConfig;
-
-      while (!done) {
-        const tile = rand(rows * cols) + 1;
-        if (this.pattern.indexOf(tile) === -1) {
-          this.pattern.push(tile);
-        }
-  
-        if (this.pattern.length === this.patternLength) {
-          done = true;
-        }
-      }
-
-      console.log(this.pattern);
+      this.boardState.guess = [];
+      this.boardState.pattern = generatePattern(rows, cols, patternLength);
     }
   
     getTiles() {
-      return this.tiles;
+      return this.boardState.tiles;
     }
 
     getDifficultyLevels() {
@@ -202,7 +227,7 @@
     setTile(value) {
       if (this.state !== STATE.IN_PROGESS) return;
 
-      this.guess.push(value);
+      this.boardState.guess.push(value);
       this.checkStatus();
     }
 
