@@ -71,7 +71,7 @@
 
       this.timeManager = timeManager;
 
-      this.initLevelConfig();
+      this._initLevelConfig();
       this.setLevel(DIFFICULTY_LEVELS.EASY);
     }
     
@@ -79,7 +79,7 @@
       this.setState(STATE.INIT);
     }
 
-    emit(event, payload) {
+    _emit(event, payload) {
       this.onEventCallback(event, payload);
     }
     
@@ -91,7 +91,7 @@
       this.onTimeCallback = callback;
     }
 
-    initLevelConfig() {
+    _initLevelConfig() {
       this.setLevelConfig({
         rows: 3,
         cols: 3,
@@ -109,16 +109,16 @@
     setLevel(level) {
       switch (level) {
         case DIFFICULTY_LEVELS.EASY:
-          this.initLevelConfig();
+          this._initLevelConfig();
           break;
 
         case DIFFICULTY_LEVELS.NORMAL:
-          this.initLevelConfig();
+          this._initLevelConfig();
           this.setLevelConfig({patternLength: 4});
           break;
         
         case DIFFICULTY_LEVELS.HARD:
-          this.initLevelConfig();
+          this._initLevelConfig();
           this.setLevelConfig({
             patternLength: 5,
             guessTime: 5000,
@@ -139,28 +139,28 @@
 
       switch(state) {
         case STATE.INIT:
-          this.seedTiles();
-          this.emit(LOGIC_EVENTS.INIT, this.boardState.tiles);
+          this._seedTiles();
+          this._emit(LOGIC_EVENTS.INIT, this.boardState.tiles);
           this.setState(STATE.HALT);
           break;
 
         case STATE.DRAW_ROUND:
           this.generateRound();
-          this.startTimer(
+          this._startTimer(
             this.levelConfig.patternTime,
             'pattern',
             () => this.setState(STATE.START_ROUND)
           );
-          this.emit(LOGIC_EVENTS.SHOW_PATTERN, this.boardState.pattern);
+          this._emit(LOGIC_EVENTS.SHOW_PATTERN, this.boardState.pattern);
           break;
 
         case STATE.START_ROUND:
           this.setState(STATE.IN_PROGESS);
-          this.emit(LOGIC_EVENTS.START_ROUND);
+          this._emit(LOGIC_EVENTS.START_ROUND);
           break;
 
         case STATE.IN_PROGESS:
-          this.startTimer(
+          this._startTimer(
             this.levelConfig.guessTime,
             'time left',
             () => this.setState(STATE.LOSE)
@@ -169,7 +169,7 @@
 
         case STATE.WIN:
           this.timeManager.stop();
-          this.startTimer(
+          this._startTimer(
             this.levelConfig.nextRoundTime,
             'next round',
             () => this.setState(STATE.DRAW_ROUND)
@@ -180,12 +180,12 @@
         case STATE.LOSE:
           this.timeManager.stop();
           this.setState(STATE.HALT);
-          this.emit(LOGIC_EVENTS.LOSE);
+          this._emit(LOGIC_EVENTS.LOSE);
           break;
       }
     }
 
-    seedTiles() {
+    _seedTiles() {
       const { rows, cols } = this.levelConfig;
       let incrementor = 1;
   
@@ -194,7 +194,7 @@
       );
     }
   
-    checkStatus() {
+    _checkStatus() {
       const { guess, pattern } = this.boardState;
       if (guess.length !== pattern.length) return;
       
@@ -228,10 +228,10 @@
       if (this.state !== STATE.IN_PROGESS) return;
 
       this.boardState.guess.push(value);
-      this.checkStatus();
+      this._checkStatus();
     }
 
-    startTimer(duration, label, actionCallback) {
+    _startTimer(duration, label, actionCallback) {
       this.timeManager.start((percent) => {
         if (percent === null) {
           actionCallback();

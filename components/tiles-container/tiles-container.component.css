@@ -1,8 +1,9 @@
-.row {
+.tiles-container--row {
   display: flex;
+  flex-direction: row;
 }
 
-.tile {
+.tiles-container--tile {
   width: 100px;
   height: 100px;
   background: #e67e22;
@@ -14,12 +15,12 @@
   font-size: 24px;
 }
 
-.tile.pattern {
+.tiles-container--tile-pattern {
   background:#e74c3c;
 }
 
-.tiles-container.is-selectable .tile:hover,
-.tiles-container.is-selectable .tile.selected {
+.tiles-container--tile-selected,
+.tiles-container-selectable .tiles-container--tile:hover {
   background: #d35400;
   cursor: pointer;
 }

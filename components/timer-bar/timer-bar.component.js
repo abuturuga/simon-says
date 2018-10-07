@@ -1,5 +1,15 @@
 ((app) => {
 
+  const LOADER_CLASS = 'loader',
+        LOADER_BAR_CLASS = `${LOADER_CLASS}--bar`,
+        COMPONENT_CLASS = 'time-bar-component',
+        STATUS_CLASS = `${COMPONENT_CLASS}--status`;
+
+
+  /**
+   * This component will render and handle the time bar
+   * @class
+   */
   class TimerBar {
 
     constructor() {
@@ -8,6 +18,12 @@
       this.hasRendered = false;
     }
 
+    /**
+     * Sets the the component props.
+     *
+     * @param {string} label State label
+     * @param {number} percent Remaining time in percentage
+     */
     setProps(label, percent) {
       if (!this.hasRendered) return;
 
@@ -15,30 +31,42 @@
       this.$loaderBar.style.width = `${percent}%`;
     }
 
-    extractElements() {
-      this.$status = this.$root.querySelector('.status');
-      this.$loaderBar = this.$root.querySelector('.loader-bar');
+    /**
+     * Cache the required HTMLElements in order to update them
+     * when new props are provided.
+     */
+    _extractElements() {
+      this.$status = this.$root.querySelector(`.${STATUS_CLASS}`);
+      this.$loaderBar = this.$root.querySelector(`.${LOADER_BAR_CLASS}`);
     }
 
-    renderLoadBar() {
+    /**
+     * Builds the template for the loader component.
+     */
+    _renderLoadBar() {
       return `
-        <div class="loader">
-          <div class="loader-bar"></div>
+        <div class="${LOADER_CLASS}">
+          <div class="${LOADER_BAR_CLASS}"></div>
         </div>
       `;
     }
 
+    /**
+     * Render the component into the page.
+     *
+     * @param {string} rootSelector HTMLElement to attach the componnet
+     */
     render(rootSelector) {
       const template = `
-        <div class="time-bar-component">
-          <span class="status"></span>
-          ${this.renderLoadBar()}
+        <div class="${COMPONENT_CLASS}">
+          <span class="${STATUS_CLASS}"></span>
+          ${this._renderLoadBar()}
         </div>
       `;
 
       this.$root = document.querySelector(rootSelector)
       this.$root.innerHTML = template;
-      this.extractElements();
+      this._extractElements();
       this.hasRendered = true;
     }
   }

@@ -6,12 +6,9 @@
   margin: 24px 0;
 }
 
-.time-bar-component .status {
+.time-bar-component--status {
   background: #3498db;
   color: white;
-}
-
-.time-bar-component .status {
   width: 100px;
   height: 20px;
   display: flex;
@@ -27,7 +24,7 @@
   margin: 0;
 }
 
-.loader-bar {
+.loader--bar {
   background: #27ae60;
   width: 0%;
   height: 100%;

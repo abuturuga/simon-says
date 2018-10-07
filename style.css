@@ -7,18 +7,18 @@ body {
   color: rgba(0, 0, 0, 0.84);
 }
 
-.app-container {
+.app-component {
   max-width: 800px;
   margin: 0 auto;
 }
 
-#game-canvas {
+.app-component--game-canvas {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-#start-btn {
+.control-bar--start-btn {
   outline: none;
   cursor: pointer;
   border: none;

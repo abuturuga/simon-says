@@ -1,5 +1,12 @@
 ((app) => {
 
+  const COMPONENT_CLASS = 'tiles-container',
+        COMPONENT_SELECTABLE_CLASS = `${COMPONENT_CLASS}-selectable`,
+        ROW_CLASS = `${COMPONENT_CLASS}--row`,
+        TILE_CLASS = `${COMPONENT_CLASS}--tile`,
+        TILE_SELECTED_CLASS = `${TILE_CLASS}-selected`,
+        TILE_PATTERN_CLASS = `${TILE_CLASS}-pattern`;
+
   /**
    * Creates a new document element.
    *
@@ -35,7 +42,7 @@
      * @param {HTMLElement} $container
      * @param {HTMLElement} $elements
      */
-    appendToContainer($container, $elements) {
+    _appendToContainer($container, $elements) {
       $elements.forEach($element => $container.appendChild($element));
     }
     
@@ -46,7 +53,7 @@
      * @param    {number}  value  Number from the grid
      * @returns  {string}         CSS class name
      */
-    getTileKey(value) {
+    _getTileKey(value) {
       return `key-${value}`;
     }
     
@@ -57,11 +64,9 @@
      * @param   {boolean} isSelectable Flag used to toggle CSS class
      */
     toggleSelectableTiles(isSelectable) {
-      const className = 'is-selectable';
-
       isSelectable
-        ? this.$tilesContainer.classList.add(className)
-        : this.$tilesContainer.classList.remove(className);
+        ? this.$tilesContainer.classList.add(COMPONENT_SELECTABLE_CLASS)
+        : this.$tilesContainer.classList.remove(COMPONENT_SELECTABLE_CLASS);
     }
 
     onTileClick(callback) {
@@ -70,9 +75,9 @@
       this.$tilesContainer.addEventListener('click', event => {
         const { target } = event;
   
-        if (target.classList.contains('tile')) {
+        if (target.classList.contains(TILE_CLASS)) {
           const value = target.getAttribute('value');
-          target.classList.add('selected');
+          target.classList.add(TILE_SELECTED_CLASS);
           callback(parseInt(value));
         }
       });
@@ -80,7 +85,7 @@
     
     clearTilesState() {
       this.$tiles.forEach($tile =>
-        $tile.classList.remove('selected', 'pattern')
+        $tile.classList.remove(TILE_SELECTED_CLASS, TILE_PATTERN_CLASS)
       );
     }
 
@@ -88,42 +93,42 @@
       this.clearTilesState();
 
       tiles.forEach(value => {
-        const key = this.getTileKey(value);
+        const key = this._getTileKey(value);
         const $tile = document.querySelector(`.${key}`);
 
-        $tile.classList.add('pattern');
+        $tile.classList.add(TILE_PATTERN_CLASS);
       });
     }
 
-    renderTile(value) {
-      const element = $(`tile`);
+    _renderTile(value) {
+      const element = $(TILE_CLASS);
       element.innerHTML = value;
       element.setAttribute('value', value);
-      element.classList.add(this.getTileKey(value));
+      element.classList.add(this._getTileKey(value));
       return element;
     }
     
-    renderRow(row) {
-      const $tiles = row.map(tile => this.renderTile(tile));
+    _renderRow(row) {
+      const $tiles = row.map(tile => this._renderTile(tile));
       this.$tiles = [...this.$tiles, ...$tiles];
 
-      const $row = $('row');
-      this.appendToContainer($row, $tiles);
+      const $row = $(ROW_CLASS);
+      this._appendToContainer($row, $tiles);
       return $row;
     }
 
-    renderTiles(tiles) {
+    _renderTiles(tiles) {
       this.$tiles = [];
 
-      const $container = $('tiles-container');
-      const $rows = tiles.map(row => this.renderRow(row));
+      const $container = $(COMPONENT_CLASS);
+      const $rows = tiles.map(row => this._renderRow(row));
       
-      this.appendToContainer($container, $rows);
+      this._appendToContainer($container, $rows);
       return $container;
     }
 
     render(tiles) {
-      this.$tilesContainer = this.renderTiles(tiles);
+      this.$tilesContainer = this._renderTiles(tiles);
   
       this.$rootElement.innerHTML = '';
       this.$rootElement.appendChild(this.$tilesContainer);
