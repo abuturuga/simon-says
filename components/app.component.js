@@ -81,7 +81,7 @@
           tilesComponent.toggleSelectableTiles(false);
           break;
         case LOGIC_EVENTS.LOSE:
-          alert('you lose');
+          alert('you lost');
           tilesComponent.toggleSelectableTiles(false);
           break;
       }

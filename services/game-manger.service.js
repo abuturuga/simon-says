@@ -171,7 +171,7 @@
       }
 
       this.level = level;
-      this.setState(STATE.INIT);
+      this.start();
     }
 
     /**
@@ -194,12 +194,23 @@
 
         case STATE.DRAW_ROUND:
           this._generateRound();
+          const pattern = [...this.boardState.pattern];
+          const deltaInterval = 100 / this.levelConfig.patternLength;
+          let patternIndex = 0;
+
           this._startTimer(
             this.levelConfig.patternTime,
             'pattern',
-            () => this.setState(STATE.START_ROUND)
+            () => this.setState(STATE.START_ROUND),
+            percent => {
+              const displayTreshold = deltaInterval * patternIndex;
+  
+              if (percent >= displayTreshold && patternIndex < this.levelConfig.patternLength) {
+                this._emit(LOGIC_EVENTS.SHOW_PATTERN, [pattern.shift()])
+                patternIndex++;
+              }
+            }
           );
-          this._emit(LOGIC_EVENTS.SHOW_PATTERN, this.boardState.pattern);
           break;
 
         case STATE.START_ROUND:
@@ -230,6 +241,10 @@
           this.setState(STATE.HALT);
           this._emit(LOGIC_EVENTS.LOSE);
           break;
+        
+        case STATE.HALT:
+            this._emit(LOGIC_EVENTS.HALT);
+            break;
       }
     }
 
@@ -256,12 +271,8 @@
       const { guess, pattern } = this.boardState;
       if (guess.length !== pattern.length) return;
       
-      const sum = (acumulator, element) => acumulator + element;
-      const guessSum = guess.reduce(sum, 0);
-      const patternSum = pattern.reduce(sum, 0);
-      
-      const state = (guessSum === patternSum)
-        ? STATE.WIN : STATE.LOSE;
+      const state = guess.every((value, index) => pattern[index] === value) ?
+        STATE.WIN :  STATE.LOSE;
 
       this.setState(state);
     }
@@ -296,7 +307,7 @@
      */
     getDifficultyLevels() {
       return Object.keys(DIFFICULTY_LEVELS)
-        .map(key => DIFFICULTY_LEVELS[key].toLowerCase());
+        .map(key => DIFFICULTY_LEVELS[key]);
     }
 
     /**
@@ -324,12 +335,14 @@
      * @param {string} label Emit this label to external components
      * @param {Function} actionCallback Called after the timer will finish
      */
-    _startTimer(duration, label, actionCallback) {
+    _startTimer(duration, label, doneCallback, callback) {
       this.timeManager.start((percent) => {
         if (percent === null) {
-          actionCallback();
+          doneCallback();
         }
-
+        if (callback) {
+          callback(percent);
+        }
         this.onTimeCallback(label, percent);
       }, duration)
     }
